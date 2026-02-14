@@ -294,5 +294,5 @@ class TokenUsageLog:
                 )
             return result
         except Exception as e:
-            print(f"Error calculating usage cost: {e}")
+            logger.error(f"Error calculating usage cost: {e}")
             return None

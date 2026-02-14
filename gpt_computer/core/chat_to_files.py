@@ -130,9 +130,10 @@ def parse_diffs(diff_string: str, diff_timeout=3) -> dict:
     Returns:
     - dict: A dictionary of Diff objects keyed by filename.
     """
-    # Regex to match individual diff blocks. Some LLMs might use different language tags (diff, python, etc.) or none.
+    # Regex to match individual diff blocks. Matches ```lang ... ``` containing a git diff.
+    # It allows for any language tag and handles hunks more flexibly.
     diff_block_pattern = regex.compile(
-        r"```(?:[a-zA-Z0-9_-]+)?\n\s*?--- .*?\n\s*?\+\+\+ .*?\n(?:@@ .*? @@\n(?:[-+ ].*?\n)*?)*?```",
+        r"```(?:[a-zA-Z0-9_-]+)?\n\s*?--- .*?\n\s*?\+\+\+ .*?\n(?:@@ .*? @@(?:\n(?:[-+ ].*(?:\n|$))*?)*?)*?```",
         re.DOTALL,
     )
 
@@ -186,7 +187,9 @@ def parse_diff_block(diff_block: str) -> dict:
     for line in lines:
         if line.startswith("--- "):
             # Pre-edit filename
-            filename_pre = line[4:]
+            filename_pre = line[4:].strip()
+            if filename_pre.startswith("a/"):
+                filename_pre = filename_pre[2:]
         elif line.startswith("+++ "):
             # Post-edit filename and initiation of a new Diff object
             if (
@@ -196,7 +199,9 @@ def parse_diff_block(diff_block: str) -> dict:
             ):
                 current_diff.hunks.append(Hunk(*hunk_header, hunk_lines))
                 hunk_lines = []
-            filename_post = line[4:]
+            filename_post = line[4:].strip()
+            if filename_post.startswith("b/"):
+                filename_post = filename_post[2:]
             current_diff = Diff(filename_pre, filename_post)
             diffs[filename_post] = current_diff
         elif line.startswith("@@ "):
@@ -222,7 +227,7 @@ def parse_diff_block(diff_block: str) -> dict:
     return diffs
 
 
-def parse_hunk_header(header_line) -> Tuple[int, int, int, int]:
+def parse_hunk_header(header_line: str) -> Tuple[int, int, int, int]:
     """
     Parses the header of a hunk from a diff.
 
@@ -232,15 +237,22 @@ def parse_hunk_header(header_line) -> Tuple[int, int, int, int]:
     Returns:
     - tuple: A tuple containing start and length information for pre- and post-edit.
     """
-    pattern = re.compile(r"^@@ -\d{1,},\d{1,} \+\d{1,},\d{1,} @@$")
+    # Pattern to extract pre and post info, allowing for missing lengths
+    pattern = re.compile(r"^@@ -(\d+)(?:,(\d+))? \+(\d+)(?:,(\d+))? @@")
+    match = pattern.search(header_line)
 
-    if not pattern.match(header_line):
-        # Return a default value if the header does not match the expected format
+    if not match:
+        logger.warning(f"Failed to parse hunk header: {header_line}")
         return 0, 0, 0, 0
 
-    pre, post = header_line.split(" ")[1:3]
-    start_line_pre_edit, hunk_len_pre_edit = map(int, pre[1:].split(","))
-    start_line_post_edit, hunk_len_post_edit = map(int, post[1:].split(","))
+    def get_val(idx, default=1):
+        return int(match.group(idx)) if match.group(idx) else default
+
+    start_line_pre_edit = get_val(1)
+    hunk_len_pre_edit = get_val(2)
+    start_line_post_edit = get_val(3)
+    hunk_len_post_edit = get_val(4)
+
     return (
         start_line_pre_edit,
         hunk_len_pre_edit,
