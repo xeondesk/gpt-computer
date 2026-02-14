@@ -358,7 +358,7 @@ class Diff:
                     logger.warning(f"Invalid Hunk in {self.filename_pre}: {val}")
                 # We don't remove it here yet, let the caller decide or handle carefully
                 # self.hunks.remove(hunk) # Removing from list while iterating is bad
-            
+
             # now correct the numbers, assuming the start line pre-edit has been fixed
             hunk.hunk_len_pre_edit = (
                 hunk.category_counts[RETAIN] + hunk.category_counts[REMOVE]

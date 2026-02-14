@@ -37,6 +37,7 @@ from langchain.schema import (
 )
 from langchain_anthropic import ChatAnthropic
 from langchain_openai import AzureChatOpenAI, ChatOpenAI
+
 try:
     from langchain_google_genai import ChatGoogleGenerativeAI
 except ImportError:
@@ -398,18 +399,18 @@ class AI:
                 model=self.model_name,
                 temperature=self.temperature,
                 streaming=self.streaming,
-                convert_system_message_to_human=True, # Gemini often needs this
+                convert_system_message_to_human=True,  # Gemini often needs this
                 callbacks=[StreamingStdOutCallbackHandler()],
             )
         elif "llama" in self.model_name or "mixtral" in self.model_name:
             # Assume Groq for Llama/Mixtral unless explicitly overridden or handled via base_url (which would be OpenAI class above if user passed base_url)
-            # If user passed base_url explictly, we might want to prioritize that via OpenAI class. 
+            # If user passed base_url explictly, we might want to prioritize that via OpenAI class.
             # But here we are inside _create_chat_model.
-            # If base_url is set, we might default to OpenAI client? 
+            # If base_url is set, we might default to OpenAI client?
             # Actually, let's make Groq explicit if no base_url, or if user asked for it.
             # For simplicity, if model name matches Groq patterns and NO base_url is provided, use Groq.
             if not self.base_url and ChatGroq:
-                 return ChatGroq(
+                return ChatGroq(
                     model_name=self.model_name,
                     temperature=self.temperature,
                     streaming=self.streaming,
@@ -417,8 +418,8 @@ class AI:
                 )
             # If base_url is provided, fall through to default OpenAI client which handles generic endpoints.
         elif "mistral" in self.model_name and not "mixtral" in self.model_name:
-             # Mistral API (not Groq Mixtral)
-             if not self.base_url and ChatMistralAI:
+            # Mistral API (not Groq Mixtral)
+            if not self.base_url and ChatMistralAI:
                 return ChatMistralAI(
                     model=self.model_name,
                     temperature=self.temperature,
@@ -426,7 +427,7 @@ class AI:
                     callbacks=[StreamingStdOutCallbackHandler()],
                 )
         elif "command" in self.model_name:
-             if not self.base_url and ChatCohere:
+            if not self.base_url and ChatCohere:
                 return ChatCohere(
                     model=self.model_name,
                     temperature=self.temperature,
