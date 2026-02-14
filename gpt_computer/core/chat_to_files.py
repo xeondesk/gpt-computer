@@ -14,7 +14,7 @@ Key Components:
 - parse_diffs: Parses a string containing diffs in the unified git diff format, extracting the changes described
   in the diffs and organizing them into a dictionary of Diff objects, keyed by the filename to which each diff applies.
 
-- parse_diff_block: Parses a single block of text from a diff string, translating it into a Diff object that
+- _parse_diff_block_content: Parses a single block of text from a diff string, translating it into a Diff object that
   represents the changes described in that block of text.
 
 This script is intended for use in environments where code collaboration or review is conducted through chat interfaces,
@@ -133,21 +133,19 @@ def parse_diffs(diff_string: str, diff_timeout=3) -> dict:
     Returns:
     - dict: A dictionary of Diff objects keyed by filename.
     """
-    # Regex to match individual diff blocks. Matches ```lang ... ``` containing a git diff.
-    # It allows for any language tag and handles hunks more flexibly.
-    diff_block_pattern = regex.compile(
-        r"```(?:[a-zA-Z0-9_-]+)?\n\s*?--- .*?\n\s*?\+\+\+ .*?\n(?:@@ .*? @@(?:\n(?:[-+ ].*(?:\n|$))*?)*?)*?```",
-        re.DOTALL,
+    # Regex to match individual diff blocks. Captures the content within ```diff ... ```
+    diff_content_pattern = regex.compile(
+        r"```(?:[a-zA-Z0-9_-]+)?\s*\n(.*?)\n```", regex.DOTALL
     )
 
     diffs = {}
     try:
-        for block in diff_block_pattern.finditer(diff_string, timeout=diff_timeout):
-            diff_block = block.group()
-
-            # Parse individual diff blocks and update the diffs dictionary
-            diff = parse_diff_block(diff_block)
-            for filename, diff_obj in diff.items():
+        # Iterate over all diff blocks found in the string
+        for match in diff_content_pattern.finditer(diff_string, timeout=diff_timeout):
+            # Pass the captured content (group 1) to _parse_diff_block_content
+            diff_block_content = match.group(1)
+            parsed_diffs_from_block = _parse_diff_block_content(diff_block_content)
+            for filename, diff_obj in parsed_diffs_from_block.items():
                 if filename not in diffs:
                     diffs[filename] = diff_obj
                 else:
@@ -164,7 +162,7 @@ def parse_diffs(diff_string: str, diff_timeout=3) -> dict:
                 "Failed to find diff blocks in code blocks, attempting to parse raw string..."
             )
             # This is a very basic fallback, could be improved
-            raw_diffs = parse_diff_block("```\n" + diff_string + "\n```")
+            raw_diffs = _parse_diff_block_content(diff_string)
             if raw_diffs:
                 return raw_diffs
 
@@ -175,17 +173,11 @@ def parse_diffs(diff_string: str, diff_timeout=3) -> dict:
     return diffs
 
 
-def parse_diff_block(diff_block: str) -> dict:
+def _parse_diff_block_content(diff_content: str) -> dict:
     """
-    Parses a block of diff text into a Diff object.
-
-    Args:
-    - diff_block (str): A single block of diff text.
-
-    Returns:
-    - dict: A dictionary containing a single Diff object keyed by the post-edit filename.
+    Parses the content of a diff block (lines without the ``` fences) into a Diff object.
     """
-    lines = diff_block.strip().split("\n")[1:-1]  # Exclude the opening and closing ```
+    lines = diff_content.strip().split("\n")
     diffs = {}
     current_diff = None
     hunk_lines = []
@@ -197,8 +189,6 @@ def parse_diff_block(diff_block: str) -> dict:
         if line.startswith("--- "):
             # Pre-edit filename
             filename_pre = line[4:].strip()
-            if filename_pre.startswith("a/"):
-                filename_pre = filename_pre[2:]
         elif line.startswith("+++ "):
             # Post-edit filename and initiation of a new Diff object
             if (
@@ -209,8 +199,6 @@ def parse_diff_block(diff_block: str) -> dict:
                 current_diff.hunks.append(Hunk(*hunk_header, hunk_lines))
                 hunk_lines = []
             filename_post = line[4:].strip()
-            if filename_post.startswith("b/"):
-                filename_post = filename_post[2:]
             current_diff = Diff(filename_pre, filename_post)
             diffs[filename_post] = current_diff
         elif line.startswith("@@ "):
