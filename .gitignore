@@ -56,10 +56,6 @@ scratchpad
 
 # projects folder apart from default prompt
 
-projects/*
-!projects/example/prompt
-!projects/example-improve
-!projects/example-vision
 
 # docs
 
