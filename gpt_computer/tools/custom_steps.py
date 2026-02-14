@@ -1,3 +1,5 @@
+import logging
+
 from platform import platform
 from sys import version_info
 from typing import List, Union
@@ -36,8 +38,6 @@ def get_platform_info() -> str:
     b = f"\nOS: {platform()}\n"
     return a + b
 
-
-import logging
 
 logger = logging.getLogger(__name__)
 

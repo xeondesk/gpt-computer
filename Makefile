@@ -51,7 +51,7 @@ farewell:
 # Defines a target named run. This target will run GPT Computer on the folder with the given name.
 run:
 	@echo -e "$(COLOR_CYAN)Running GPT Computer on $(COLOR_GREEN)$(name)$(COLOR_CYAN) folder with model $(COLOR_GREEN)$(MODEL)$(COLOR_CYAN)...$(COLOR_RESET)" && \
-	poetry run gpt-computer projects/$(name) --model $(MODEL)
+	poetry run gpt-computer main projects/$(name) --model $(MODEL)
 
 # Runs unit tests
 test:

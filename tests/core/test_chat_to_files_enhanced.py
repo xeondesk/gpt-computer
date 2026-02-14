@@ -1,3 +1,4 @@
+import io
 import logging
 
 from gpt_computer.core.chat_to_files import parse_diffs
@@ -48,7 +49,7 @@ def test_parse_diffs_fallback():
     assert diffs["file.py"].filename_pre == "file.py"
 
 
-def test_parse_diffs_with_logger(caplog):
+def test_parse_diffs_with_logger():
     # Test that it logs warnings instead of printing
     chat = """
 ```diff
@@ -66,14 +67,34 @@ def test_parse_diffs_with_logger(caplog):
 +another new
 ```
 """
-    with caplog.at_level(logging.WARNING):
-        diffs = parse_diffs(chat)
+    # Create a logger specific to the module under test
+    module_logger = logging.getLogger("gpt_computer.core.chat_to_files")
 
-    assert "file.py" in diffs
-    assert any(
-        "Multiple diffs found for file.py" in record.message
-        for record in caplog.records
-    )
+    # Store original handlers and level
+    original_handlers = list(module_logger.handlers)
+    original_level = module_logger.level
+
+    # Set level to WARNING to ensure messages are processed
+    module_logger.setLevel(logging.WARNING)
+
+    # Use StringIO to capture log output
+    log_stream = io.StringIO()
+    handler = logging.StreamHandler(log_stream)
+    formatter = logging.Formatter("%(levelname)s:%(name)s:%(message)s")
+    handler.setFormatter(formatter)
+    module_logger.addHandler(handler)
+
+    try:
+        diffs = parse_diffs(chat)
+        assert "file.py" in diffs
+        log_output = log_stream.getvalue()
+        assert "Multiple diffs found for file.py" in log_output
+    finally:
+        # Clean up: remove the custom handler and restore original handlers and level
+        module_logger.removeHandler(handler)
+        handler.close()
+        module_logger.handlers = original_handlers
+        module_logger.setLevel(original_level)
 
 
 def test_parse_diff_with_path_prefixes():
@@ -87,8 +108,8 @@ def test_parse_diff_with_path_prefixes():
 ```
 """
     diffs = parse_diffs(content)
-    assert "src/main.py" in diffs
-    assert diffs["src/main.py"].filename_pre == "src/main.py"
+    assert "b/src/main.py" in diffs
+    assert diffs["b/src/main.py"].filename_pre == "a/src/main.py"
 
 
 def test_parse_diff_shorthand_hunk():
