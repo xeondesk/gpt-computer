@@ -36,6 +36,8 @@ import logging
 from collections import Counter
 from typing import List
 
+logger = logging.getLogger(__name__)
+
 RETAIN = "retain"
 ADD = "add"
 REMOVE = "remove"
