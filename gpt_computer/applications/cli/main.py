@@ -564,5 +564,21 @@ def main(
         print("Total tokens used: ", ai.token_usage_log.total_tokens())
 
 
+@app.command(help="List all available projects in the projects/ folder.")
+def list():
+    """
+    Lists all available projects in the projects/ folder by looking for directories containing a 'prompt' file.
+    """
+    projects_dir = Path("projects")
+    if not projects_dir.exists() or not projects_dir.is_dir():
+        print(colored("No projects directory found.", "red"))
+        return
+
+    print(colored("Available projects:", "cyan"))
+    for item in sorted(projects_dir.iterdir()):
+        if item.is_dir() and (item / "prompt").exists():
+            print(f"  - {item.name}")
+
+
 if __name__ == "__main__":
     app()
