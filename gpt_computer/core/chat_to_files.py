@@ -130,9 +130,9 @@ def parse_diffs(diff_string: str, diff_timeout=3) -> dict:
     Returns:
     - dict: A dictionary of Diff objects keyed by filename.
     """
-    # Regex to match individual diff blocks. Some LLMs might omit the language specifier or use different backticks.
+    # Regex to match individual diff blocks. Some LLMs might use different language tags (diff, python, etc.) or none.
     diff_block_pattern = regex.compile(
-        r"```(?:diff)?\n\s*?--- .*?\n\s*?\+\+\+ .*?\n(?:@@ .*? @@\n(?:[-+ ].*?\n)*?)*?```",
+        r"```(?:[a-zA-Z0-9_-]+)?\n\s*?--- .*?\n\s*?\+\+\+ .*?\n(?:@@ .*? @@\n(?:[-+ ].*?\n)*?)*?```",
         re.DOTALL,
     )
 

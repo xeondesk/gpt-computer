@@ -152,3 +152,21 @@ def test_cohere_support(monkeypatch):
     
     assert len(mock_calls) > 0
     assert mock_calls[0].get("model") == "command-r-plus"
+
+def test_base_url_with_other_model(monkeypatch):
+    # Tests that if base_url is provided, it uses ChatOpenAI regardless of model name (except for Gemini which might need specific handler)
+    mock_calls = []
+
+    class MockChatOpenAI:
+        def __init__(self, **kwargs):
+            mock_calls.append(kwargs)
+            self.model = ""
+
+    monkeypatch.setattr("gpt_computer.core.ai.ChatOpenAI", MockChatOpenAI)
+    
+    # Llama on local endpoint
+    ai = AI(model_name="llama3", base_url="http://localhost:11434/v1")
+    
+    assert len(mock_calls) > 0
+    assert mock_calls[0].get("openai_api_base") == "http://localhost:11434/v1"
+    # It should use ChatOpenAI, not ChatGroq
