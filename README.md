@@ -121,7 +121,52 @@ python -m pip install gpt-computer
 ## Configure API
 
 ```bash
+# For OpenAI
 export OPENAI_API_KEY=your_api_key
+
+# For Anthropic
+export ANTHROPIC_API_KEY=your_api_key
+
+# For Google Gemini
+export GOOGLE_API_KEY=your_api_key
+
+# For Groq
+export GROQ_API_KEY=your_api_key
+
+# For Mistral
+export MISTRAL_API_KEY=your_api_key
+
+# For Cohere
+export COHERE_API_KEY=your_api_key
+```
+
+## Running with Local LLMs
+
+gpt-computer supports local LLMs via any OpenAI-compatible server (Ollama, vLLM, LocalAI, etc.):
+
+```bash
+gpte my-project --model llama3 --base-url http://localhost:11434/v1
+```
+
+## Supported Models
+
+We support a wide range of state-of-the-art models:
+* **OpenAI**: GPT-4o, GPT-4-turbo, GPT-3.5-turbo
+* **Anthropic**: Claude 3.5 Sonnet, Claude 3 Opus/Haiku
+* **Google**: Gemini 1.5 Pro/Flash
+* **Groq**: Llama 3 (70B/8B), Mixtral 8x7B
+* **Mistral**: Mistral Large 2, Pixtral
+* **Cohere**: Command R+
+
+## Project Examples
+
+Explore our built-in templates to get started quickly:
+```bash
+make run snake-game
+make run calculator
+make run personal-finance
+make run unit-converter
+make run password-generator
 ```
 
 ## Generate a Project

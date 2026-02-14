@@ -14,7 +14,7 @@ Key Components:
 - parse_diffs: Parses a string containing diffs in the unified git diff format, extracting the changes described
   in the diffs and organizing them into a dictionary of Diff objects, keyed by the filename to which each diff applies.
 
-- parse_diff_block: Parses a single block of text from a diff string, translating it into a Diff object that
+- _parse_diff_block_content: Parses a single block of text from a diff string, translating it into a Diff object that
   represents the changes described in that block of text.
 
 This script is intended for use in environments where code collaboration or review is conducted through chat interfaces,
@@ -86,6 +86,9 @@ def apply_diffs(diffs: Dict[str, Diff], files: FilesDict) -> FilesDict:
                 line[1] for hunk in diff.hunks for line in hunk.lines
             )
         else:
+            if diff.filename_pre not in files:
+                # If the file being modified does not exist, initialize it as empty
+                files[diff.filename_pre] = ""
             # Convert the file content to a dictionary of lines
             line_dict = file_to_lines_dict(files[diff.filename_pre])
             for hunk in diff.hunks:
@@ -130,48 +133,51 @@ def parse_diffs(diff_string: str, diff_timeout=3) -> dict:
     Returns:
     - dict: A dictionary of Diff objects keyed by filename.
     """
-    # Regex to match individual diff blocks
-    diff_block_pattern = regex.compile(
-        r"```.*?\n\s*?--- .*?\n\s*?\+\+\+ .*?\n(?:@@ .*? @@\n(?:[-+ ].*?\n)*?)*?```",
-        re.DOTALL,
+    # Regex to match individual diff blocks. Captures the content within ```diff ... ```
+    diff_content_pattern = regex.compile(
+        r"```(?:[a-zA-Z0-9_-]+)?\s*\n(.*?)\n```", regex.DOTALL
     )
 
     diffs = {}
     try:
-        for block in diff_block_pattern.finditer(diff_string, timeout=diff_timeout):
-            diff_block = block.group()
-
-            # Parse individual diff blocks and update the diffs dictionary
-            diff = parse_diff_block(diff_block)
-            for filename, diff_obj in diff.items():
+        # Iterate over all diff blocks found in the string
+        for match in diff_content_pattern.finditer(diff_string, timeout=diff_timeout):
+            # Pass the captured content (group 1) to _parse_diff_block_content
+            diff_block_content = match.group(1)
+            parsed_diffs_from_block = _parse_diff_block_content(diff_block_content)
+            for filename, diff_obj in parsed_diffs_from_block.items():
                 if filename not in diffs:
                     diffs[filename] = diff_obj
                 else:
-                    print(
-                        f"\nMultiple diffs found for {filename}. Only the first one is kept."
+                    logger.warning(
+                        f"Multiple diffs found for {filename}. Only the first one is kept."
                     )
     except TimeoutError:
-        print("gpt-computer timed out while parsing git diff")
+        logger.error("gpt-computer timed out while parsing git diff")
 
     if not diffs:
-        print(
-            "GPT did not provide any proposed changes. Please try to reselect the files for uploading and edit your prompt file."
+        # Fallback: try to find diffs without code blocks if the LLM was lazy
+        if "--- " in diff_string and "+++ " in diff_string and "@@ " in diff_string:
+            logger.info(
+                "Failed to find diff blocks in code blocks, attempting to parse raw string..."
+            )
+            # This is a very basic fallback, could be improved
+            raw_diffs = _parse_diff_block_content(diff_string)
+            if raw_diffs:
+                return raw_diffs
+
+        logger.warning(
+            "No proposed changes found. Please try to reselect the files for uploading and edit your prompt file."
         )
 
     return diffs
 
 
-def parse_diff_block(diff_block: str) -> dict:
+def _parse_diff_block_content(diff_content: str) -> dict:
     """
-    Parses a block of diff text into a Diff object.
-
-    Args:
-    - diff_block (str): A single block of diff text.
-
-    Returns:
-    - dict: A dictionary containing a single Diff object keyed by the post-edit filename.
+    Parses the content of a diff block (lines without the ``` fences) into a Diff object.
     """
-    lines = diff_block.strip().split("\n")[1:-1]  # Exclude the opening and closing ```
+    lines = diff_content.strip().split("\n")
     diffs = {}
     current_diff = None
     hunk_lines = []
@@ -182,7 +188,7 @@ def parse_diff_block(diff_block: str) -> dict:
     for line in lines:
         if line.startswith("--- "):
             # Pre-edit filename
-            filename_pre = line[4:]
+            filename_pre = line[4:].strip()
         elif line.startswith("+++ "):
             # Post-edit filename and initiation of a new Diff object
             if (
@@ -192,7 +198,7 @@ def parse_diff_block(diff_block: str) -> dict:
             ):
                 current_diff.hunks.append(Hunk(*hunk_header, hunk_lines))
                 hunk_lines = []
-            filename_post = line[4:]
+            filename_post = line[4:].strip()
             current_diff = Diff(filename_pre, filename_post)
             diffs[filename_post] = current_diff
         elif line.startswith("@@ "):
@@ -218,7 +224,7 @@ def parse_diff_block(diff_block: str) -> dict:
     return diffs
 
 
-def parse_hunk_header(header_line) -> Tuple[int, int, int, int]:
+def parse_hunk_header(header_line: str) -> Tuple[int, int, int, int]:
     """
     Parses the header of a hunk from a diff.
 
@@ -228,15 +234,22 @@ def parse_hunk_header(header_line) -> Tuple[int, int, int, int]:
     Returns:
     - tuple: A tuple containing start and length information for pre- and post-edit.
     """
-    pattern = re.compile(r"^@@ -\d{1,},\d{1,} \+\d{1,},\d{1,} @@$")
+    # Pattern to extract pre and post info, allowing for missing lengths
+    pattern = re.compile(r"^@@ -(\d+)(?:,(\d+))? \+(\d+)(?:,(\d+))? @@")
+    match = pattern.search(header_line)
 
-    if not pattern.match(header_line):
-        # Return a default value if the header does not match the expected format
+    if not match:
+        logger.warning(f"Failed to parse hunk header: {header_line}")
         return 0, 0, 0, 0
 
-    pre, post = header_line.split(" ")[1:3]
-    start_line_pre_edit, hunk_len_pre_edit = map(int, pre[1:].split(","))
-    start_line_post_edit, hunk_len_post_edit = map(int, post[1:].split(","))
+    def get_val(idx, default=1):
+        return int(match.group(idx)) if match.group(idx) else default
+
+    start_line_pre_edit = get_val(1)
+    hunk_len_pre_edit = get_val(2)
+    start_line_post_edit = get_val(3)
+    hunk_len_post_edit = get_val(4)
+
     return (
         start_line_pre_edit,
         hunk_len_pre_edit,

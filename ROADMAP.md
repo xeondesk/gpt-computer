@@ -14,9 +14,9 @@ Each pillar is supported by a set of epics, reflecting our major goals and initi
 
 ## Tracking Progress with GitHub Projects
 
-We are using [GitHub Projects](https://github.com/orgs/xeondesk/projects/3) to track the progress of our roadmap.
+We are using [GitHub Projects](https://github.com/orgs/xeondesk/projects/1) to track the progress of our roadmap.
 
-Each issue within our project is categorized under one of the main pillars and, in most cases, associated epics. You can check our [Project's README](https://github.com/orgs/xeondesk/projects/3?pane=info) section to understand better our logic and organization.
+Each issue within our project is categorized under one of the main pillars and, in most cases, associated epics. You can check our [Project's README](https://github.com/orgs/xeondesk/projects/1?pane=info) section to understand better our logic and organization.
 
 
 
