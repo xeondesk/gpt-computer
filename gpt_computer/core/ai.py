@@ -417,7 +417,7 @@ class AI:
                     callbacks=[StreamingStdOutCallbackHandler()],
                 )
             # If base_url is provided, fall through to default OpenAI client which handles generic endpoints.
-        elif "mistral" in self.model_name and not "mixtral" in self.model_name:
+        elif "mistral" in self.model_name and "mixtral" not in self.model_name:
             # Mistral API (not Groq Mixtral)
             if not self.base_url and ChatMistralAI:
                 return ChatMistralAI(

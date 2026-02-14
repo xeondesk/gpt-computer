@@ -1,7 +1,5 @@
-import os
-import shutil
-from pathlib import Path
 from typer.testing import CliRunner
+
 from gpt_computer.applications.cli.main import app
 
 runner = CliRunner()
