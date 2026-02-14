@@ -280,6 +280,7 @@ class TokenUsageLog:
             Cost in USD.
         """
         if not self.is_openai_model():
+            logger.info(f"Cost calculation for model {self.model_name} is not fully supported yet. Only OpenAI models are currently supported.")
             return None
 
         try:
