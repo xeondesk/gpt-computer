@@ -41,6 +41,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
 def self_heal(
     ai: AI,
     execution_env: BaseExecutionEnv,
@@ -87,7 +88,7 @@ def self_heal(
                 f"And the following errors:\n{stderr_full}\n\n"
                 "Please analyze the errors and fix the code. Make sure to update ALL necessary files."
             )
-            
+
             new_prompt = Prompt(error_msg)
             files_dict = improve_fn(
                 ai, new_prompt, files_dict, memory, preprompts_holder, diff_timeout

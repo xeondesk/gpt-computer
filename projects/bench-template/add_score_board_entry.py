@@ -4,11 +4,12 @@ import sys
 from typing import List
 from git import Repo
 
+
 def find_repo_root(file_path):
     # Traverse up from the file's directory to find the repository root
     current_dir = os.path.abspath(os.path.dirname(file_path))
     while True:
-        if os.path.isdir(os.path.join(current_dir, '.git')):
+        if os.path.isdir(os.path.join(current_dir, ".git")):
             return current_dir
         # Move up one directory
         parent_dir = os.path.abspath(os.path.join(current_dir, os.pardir))
@@ -24,6 +25,7 @@ def get_commit_hash(file_path):
     # Initialize a Git repository object
     repo = Repo(repo_root)
     return repo.head.commit.hexsha
+
 
 def check_changes(file_path):
     repo_root = find_repo_root(file_path)
@@ -41,7 +43,7 @@ def check_changes(file_path):
             return True
 
     # Check if the file is modified and staged
-    for diff_item in repo.index.diff('HEAD'):
+    for diff_item in repo.index.diff("HEAD"):
         if diff_item.a_path == rel_file_path:
             print(f"{file_path} has staged changes.")
             return True
@@ -50,36 +52,41 @@ def check_changes(file_path):
 
 
 def read_yaml_file(filename: str) -> List:
-    with open(filename, 'r') as file:
+    with open(filename, "r") as file:
         data = yaml.load(file, Loader=yaml.FullLoader)
     return data
 
 
 def write_yaml_file(filename: str, data: List) -> None:
-    with open(filename, 'w') as file:
+    with open(filename, "w") as file:
         yaml.dump(data, file)
 
 
 def main(results_file: str, scoreboard_file: str):
-    answer = input(
-        "Do you want to make a scoreboard entry? (y/n)"
-    )
+    answer = input("Do you want to make a scoreboard entry? (y/n)")
     while answer.lower() not in ("y", "n"):
         answer = input("Invalid input. Please enter y or n: ")
 
     if answer.lower() == "y":
         result_data = read_yaml_file(results_file)
-        benchmark_file = os.path.join(os.path.abspath(os.path.dirname(os.path.realpath(__file__))), "benchmark_agent.py")
+        benchmark_file = os.path.join(
+            os.path.abspath(os.path.dirname(os.path.realpath(__file__))),
+            "benchmark_agent.py",
+        )
         uncommitted_changes = check_changes(benchmark_file)
-        while(uncommitted_changes):
+        while uncommitted_changes:
             uncommitted_changes = check_changes(benchmark_file)
-            input("For reproducibility, the current git commit of benchmark_agent.py is recorded to the scoreboard. Currently there are uncommitted/unstaged changes, preventing the commit to be saved. When you have staged and commited any current changes to benchmark_agent.py, press enter")
+            input(
+                "For reproducibility, the current git commit of benchmark_agent.py is recorded to the scoreboard. Currently there are uncommitted/unstaged changes, preventing the commit to be saved. When you have staged and commited any current changes to benchmark_agent.py, press enter"
+            )
 
         result_data["commit_hash"] = get_commit_hash(benchmark_file)
         answer = input(
             "Please write the url of a public github/gitlab repo where the current version of the benchmark_agent.py file can be found"
         )
-        while ("gitlab.com") not in answer.lower() and ("github.com") not in answer.lower():
+        while ("gitlab.com") not in answer.lower() and (
+            "github.com"
+        ) not in answer.lower():
             answer = input("The given input is not a url to github or gitlab.")
         result_data["url"] = answer
         answer = input(
@@ -95,6 +102,7 @@ def main(results_file: str, scoreboard_file: str):
         scoreboard_data.append(result_data)
         write_yaml_file(scoreboard_file, scoreboard_data)
 
+
 if __name__ == "__main__":
-    assert (len(sys.argv) == 3)
+    assert len(sys.argv) == 3
     main(sys.argv[1], sys.argv[2])

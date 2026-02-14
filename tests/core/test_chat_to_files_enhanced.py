@@ -2,6 +2,7 @@ import pytest
 import logging
 from gpt_computer.core.chat_to_files import parse_diffs
 
+
 def test_parse_diffs_with_diff_tag():
     chat = """
 Here is the change:
@@ -17,6 +18,7 @@ Here is the change:
     assert "file.py" in diffs
     assert diffs["file.py"].filename_pre == "file.py"
 
+
 def test_parse_diffs_with_other_tag():
     # Test that it works with python or other tags if they contain the diff markers
     chat = """
@@ -31,6 +33,7 @@ def test_parse_diffs_with_other_tag():
     diffs = parse_diffs(chat)
     assert "file.py" in diffs
 
+
 def test_parse_diffs_fallback():
     # Test the fallback when no code blocks are present but diff markers are
     chat = """
@@ -43,6 +46,7 @@ def test_parse_diffs_fallback():
     diffs = parse_diffs(chat)
     assert "file.py" in diffs
     assert diffs["file.py"].filename_pre == "file.py"
+
 
 def test_parse_diffs_with_logger(caplog):
     # Test that it logs warnings instead of printing
@@ -64,9 +68,13 @@ def test_parse_diffs_with_logger(caplog):
 """
     with caplog.at_level(logging.WARNING):
         diffs = parse_diffs(chat)
-    
+
     assert "file.py" in diffs
-    assert any("Multiple diffs found for file.py" in record.message for record in caplog.records)
+    assert any(
+        "Multiple diffs found for file.py" in record.message
+        for record in caplog.records
+    )
+
 
 def test_parse_diff_with_path_prefixes():
     content = """
@@ -81,6 +89,7 @@ def test_parse_diff_with_path_prefixes():
     diffs = parse_diffs(content)
     assert "src/main.py" in diffs
     assert diffs["src/main.py"].filename_pre == "src/main.py"
+
 
 def test_parse_diff_shorthand_hunk():
     content = """

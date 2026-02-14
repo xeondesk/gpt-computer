@@ -148,20 +148,26 @@ def parse_diffs(diff_string: str, diff_timeout=3) -> dict:
                 if filename not in diffs:
                     diffs[filename] = diff_obj
                 else:
-                    logger.warning(f"Multiple diffs found for {filename}. Only the first one is kept.")
+                    logger.warning(
+                        f"Multiple diffs found for {filename}. Only the first one is kept."
+                    )
     except TimeoutError:
         logger.error("gpt-computer timed out while parsing git diff")
 
     if not diffs:
         # Fallback: try to find diffs without code blocks if the LLM was lazy
         if "--- " in diff_string and "+++ " in diff_string and "@@ " in diff_string:
-             logger.info("Failed to find diff blocks in code blocks, attempting to parse raw string...")
-             # This is a very basic fallback, could be improved
-             raw_diffs = parse_diff_block("```\n" + diff_string + "\n```")
-             if raw_diffs:
-                 return raw_diffs
-        
-        logger.warning("No proposed changes found. Please try to reselect the files for uploading and edit your prompt file.")
+            logger.info(
+                "Failed to find diff blocks in code blocks, attempting to parse raw string..."
+            )
+            # This is a very basic fallback, could be improved
+            raw_diffs = parse_diff_block("```\n" + diff_string + "\n```")
+            if raw_diffs:
+                return raw_diffs
+
+        logger.warning(
+            "No proposed changes found. Please try to reselect the files for uploading and edit your prompt file."
+        )
 
     return diffs
 
