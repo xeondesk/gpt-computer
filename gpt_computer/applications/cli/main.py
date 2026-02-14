@@ -320,6 +320,12 @@ def main(
         help="""Endpoint for your Azure OpenAI Service (https://xx.openai.azure.com).
             In that case, the given model is the deployment name chosen in the Azure AI Studio.""",
     ),
+    base_url: str = typer.Option(
+        None,
+        "--base-url",
+        "-b",
+        help="Base URL for the API (e.g. http://localhost:11434/v1 for Ollama).",
+    ),
     use_custom_preprompts: bool = typer.Option(
         False,
         "--use-custom-preprompts",
@@ -462,6 +468,7 @@ def main(
             model_name=model,
             temperature=temperature,
             azure_endpoint=azure_endpoint,
+            base_url=base_url,
         )
 
     path = Path(project_path)

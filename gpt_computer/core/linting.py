@@ -3,6 +3,11 @@ import black
 from gpt_computer.core.files_dict import FilesDict
 
 
+import logging
+
+logger = logging.getLogger(__name__)
+
+
 class Linting:
     def __init__(self):
         # Dictionary to hold linting methods for different file types
@@ -20,11 +25,11 @@ class Linting:
             linted_content = black.format_str(content, mode=black.FileMode(**config))
         except black.NothingChanged:
             # If nothing changed, log the info and return the original content
-            print("\nInfo: No changes were made during formatting.\n")
+            logger.info("No changes were made during formatting.")
             linted_content = content
         except Exception as error:
             # If any other exception occurs, log the error and return the original content
-            print(f"\nError: Could not format due to {error}\n")
+            logger.error(f"Could not format due to {error}")
             linted_content = content
         return linted_content
 
@@ -55,10 +60,10 @@ class Linting:
                 original_content = content
                 linted_content = self.linters[extension](content, config)
                 if linted_content != original_content:
-                    print(f"Linted {filename}.")
+                    logger.info(f"Linted {filename}.")
                 else:
-                    print(f"No changes made for {filename}.")
+                    logger.debug(f"No changes made for {filename}.")
                 files_dict[filename] = linted_content
             else:
-                print(f"No linter registered for {filename}.")
+                logger.debug(f"No linter registered for {filename}.")
         return files_dict
