@@ -22,10 +22,10 @@ def set_file_selector_tmpproject(tmp_path):
     os.mkdir(project_path / "x")
     os.mkdir(project_path / "a")
 
-    gpteng_path = project_path / ".gpteng"
-    os.mkdir(gpteng_path)
+    gptcom_path = project_path / ".gptcom"
+    os.mkdir(gptcom_path)
 
-    with open(gpteng_path / "file_selection.toml", "w") as file:
+    with open(gptcom_path / "file_selection.toml", "w") as file:
         file.write("[files]\n")
         file.write(' "x/xxtest.py" = "selected"\n')
         file.write(' "a/aatest.py" = "selected"\n')

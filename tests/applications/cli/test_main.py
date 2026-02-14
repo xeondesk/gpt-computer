@@ -315,7 +315,7 @@ class TestLoadPrompt:
 #         simplified_main(str(p), "improve")
 #         DiskExecutionEnv(path=p)
 #         assert (
-#             (p / f".gpteng/memory/{DEBUG_LOG_FILE}").read_text().strip()
+#             (p / f".gptcom/memory/{DEBUG_LOG_FILE}").read_text().strip()
 #             == """UPLOADED FILES:
 # ```
 # File: main.py
@@ -383,7 +383,7 @@ class TestLoadPrompt:
 #         simplified_main(str(p), "improve")
 #         DiskExecutionEnv(path=p)
 #         assert (
-#             (p / f".gpteng/memory/{DEBUG_LOG_FILE}").read_text().strip()
+#             (p / f".gptcom/memory/{DEBUG_LOG_FILE}").read_text().strip()
 #             == """UPLOADED FILES:
 # ```
 # File: main.py
@@ -436,7 +436,7 @@ class TestLoadPrompt:
 #         simplified_main(str(p), "improve")
 #         DiskExecutionEnv(path=p)
 #         assert (
-#             (p / f".gpteng/memory/{DEBUG_LOG_FILE}").read_text().strip()
+#             (p / f".gptcom/memory/{DEBUG_LOG_FILE}").read_text().strip()
 #             == """UPLOADED FILES:
 # ```
 # File: main.py

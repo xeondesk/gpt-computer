@@ -86,6 +86,9 @@ def apply_diffs(diffs: Dict[str, Diff], files: FilesDict) -> FilesDict:
                 line[1] for hunk in diff.hunks for line in hunk.lines
             )
         else:
+            if diff.filename_pre not in files:
+                # If the file being modified does not exist, initialize it as empty
+                files[diff.filename_pre] = ""
             # Convert the file content to a dictionary of lines
             line_dict = file_to_lines_dict(files[diff.filename_pre])
             for hunk in diff.hunks:

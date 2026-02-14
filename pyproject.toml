@@ -44,6 +44,7 @@ langchain-mistralai = "^0.1.0"
 langchain-cohere = "^0.1.4"
 pyyaml = "^6.0.1"
 gitpython = "^3.1.40"
+packaging = "^23.2"
 
 [tool.poetry.group.dev.dependencies]
 pytest = ">=7.3.1"
