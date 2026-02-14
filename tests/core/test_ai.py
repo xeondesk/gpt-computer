@@ -98,7 +98,7 @@ def test_gemini_support(monkeypatch):
     # Since the import happens at top level, if it failed, ChatGoogleGenerativeAI is None.
     # Monkeypatching 'gpt_computer.core.ai.ChatGoogleGenerativeAI' should work if we do it right.
 
-    ai = AI(model_name="gemini-1.5-pro")
+    AI(model_name="gemini-1.5-pro")
 
     assert len(mock_calls) > 0
     assert mock_calls[0].get("model") == "gemini-1.5-pro"
@@ -116,7 +116,7 @@ def test_groq_support(monkeypatch):
 
     monkeypatch.setattr("gpt_computer.core.ai.ChatGroq", MockChatGroq)
 
-    ai = AI(model_name="llama3-8b-8192")
+    AI(model_name="llama3-8b-8192")
 
     assert len(mock_calls) > 0
     assert mock_calls[0].get("model_name") == "llama3-8b-8192"
@@ -133,7 +133,7 @@ def test_mistral_support(monkeypatch):
 
     monkeypatch.setattr("gpt_computer.core.ai.ChatMistralAI", MockChatMistralAI)
 
-    ai = AI(model_name="mistral-large-latest")
+    AI(model_name="mistral-large-latest")
 
     assert len(mock_calls) > 0
     assert mock_calls[0].get("model") == "mistral-large-latest"
@@ -150,7 +150,7 @@ def test_cohere_support(monkeypatch):
 
     monkeypatch.setattr("gpt_computer.core.ai.ChatCohere", MockChatCohere)
 
-    ai = AI(model_name="command-r-plus")
+    AI(model_name="command-r-plus")
 
     assert len(mock_calls) > 0
     assert mock_calls[0].get("model") == "command-r-plus"
@@ -168,7 +168,7 @@ def test_base_url_with_other_model(monkeypatch):
     monkeypatch.setattr("gpt_computer.core.ai.ChatOpenAI", MockChatOpenAI)
 
     # Llama on local endpoint
-    ai = AI(model_name="llama3", base_url="http://localhost:11434/v1")
+    AI(model_name="llama3", base_url="http://localhost:11434/v1")
 
     assert len(mock_calls) > 0
     assert mock_calls[0].get("openai_api_base") == "http://localhost:11434/v1"

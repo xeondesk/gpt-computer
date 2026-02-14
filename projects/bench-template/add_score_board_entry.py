@@ -1,7 +1,10 @@
-import yaml
 import os
 import sys
+
 from typing import List
+
+import yaml
+
 from git import Repo
 
 

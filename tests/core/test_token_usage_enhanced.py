@@ -1,6 +1,8 @@
 import logging
-from gpt_computer.core.token_usage import TokenUsageLog
+
 from langchain.schema import HumanMessage, SystemMessage
+
+from gpt_computer.core.token_usage import TokenUsageLog
 
 
 def test_usage_cost_non_openai(caplog):

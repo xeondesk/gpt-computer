@@ -1,5 +1,6 @@
-import tempfile
 import os
+import tempfile
+
 from typing import Optional
 
 from gpt_computer.core.ai import AI
@@ -7,14 +8,11 @@ from gpt_computer.core.base_execution_env import BaseExecutionEnv
 from gpt_computer.core.base_memory import BaseMemory
 from gpt_computer.core.default.disk_execution_env import DiskExecutionEnv
 from gpt_computer.core.default.disk_memory import DiskMemory
-from gpt_computer.core.default.paths import (
-    PREPROMPTS_PATH,
-    memory_path,
-)
-from gpt_computer.core.prompt import Prompt
+from gpt_computer.core.default.paths import PREPROMPTS_PATH, memory_path
 from gpt_computer.core.default.steps import improve_fn as improve
 from gpt_computer.core.files_dict import FilesDict
 from gpt_computer.core.preprompts_holder import PrepromptsHolder
+from gpt_computer.core.prompt import Prompt
 
 
 # THIS METHOD IS USED BY "bench" TO SET UP THE AGENT AND MUST BE IMPLEMENTED.

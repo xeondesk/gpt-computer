@@ -1,9 +1,8 @@
+import logging
+
 import black
 
 from gpt_computer.core.files_dict import FilesDict
-
-
-import logging
 
 logger = logging.getLogger(__name__)
 
