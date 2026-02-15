@@ -41,24 +41,24 @@ Create new code (default usage)
 
 - Create an empty folder for your project anywhere on your computer
 - Create a file called ``prompt`` (no extension) inside your new folder and fill it with instructions
-- Run ``gpte <project_dir>`` with a relative path to your folder
+- Run ``gptc <project_dir>`` with a relative path to your folder
 - For example, if you create a new project inside the gpt-computer ``/projects`` directory:
 
   .. code-block:: console
 
-    $ gpte projects/my-new-project
+    $ gptc projects/my-new-project
 
 Improve Existing Code
 ---------------------
 
 - Locate a folder with code which you want to improve anywhere on your computer
 - Create a file called ``prompt`` (no extension) inside your new folder and fill it with instructions for how you want to improve the code
-- Run ``gpte <project_dir> -i`` with a relative path to your folder
+- Run ``gptc <project_dir> -i`` with a relative path to your folder
 - For example, if you want to run it against an existing project inside the gpt-computer ``/projects`` directory:
 
   .. code-block:: console
 
-    $ gpte projects/my-old-project -i
+    $ gptc projects/my-old-project -i
 
 By running ``gpt-computer`` you agree to our `terms <./terms_link.html>`_.
 

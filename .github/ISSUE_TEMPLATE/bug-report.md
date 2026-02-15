@@ -29,7 +29,7 @@ If your project includes a debug_log_file.txt, kindly upload it from your_projec
 
 ## System Information
 
-Please copy and paste the output of the `gpte --sysinfo` command as part of your bug report.
+Please copy and paste the output of the `gptc --sysinfo` command as part of your bug report.
 
 ## Installation Method
 

@@ -8,6 +8,6 @@ It's important to be aware that the utilization of natural text inputs, includin
 
 For a deeper understanding of OpenAI's overarching terms of use, we encourage you to explore the details available [here](https://openai.com/policies/terms-of-use).
 
-Optionally, gpt-computer collects usage data for the purpose of improving gpt-computer. Data collection only happens when a consent file called .gpte_consent is present in the gpt-computer directory. Note that gpt-computer cannot prevent that data streams passing through gpt-computer to a third party may be stored by that third party (for example OpenAI).
+Optionally, gpt-computer collects usage data for the purpose of improving gpt-computer. Data collection only happens when a consent file called .gptc_consent is present in the gpt-computer directory. Note that gpt-computer cannot prevent that data streams passing through gpt-computer to a third party may be stored by that third party (for example OpenAI).
 
 Your engagement with gpt-computer is an acknowledgment and acceptance of these terms, demonstrating your commitment to using this tool responsibly and within the bounds of ethical conduct. We appreciate your trust and look forward to the exciting possibilities that gpt-computer can offer in your endeavors.

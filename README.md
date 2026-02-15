@@ -145,7 +145,7 @@ export COHERE_API_KEY=your_api_key
 gpt-computer supports local LLMs via any OpenAI-compatible server (Ollama, vLLM, LocalAI, etc.):
 
 ```bash
-gpte my-project --model llama3 --base-url http://localhost:11434/v1
+gptc my-project --model llama3 --base-url http://localhost:11434/v1
 ```
 
 ## Supported Models
@@ -172,7 +172,7 @@ make run password-generator
 ## Generate a Project
 
 ```bash
-gpte my-project
+gptc my-project
 ```
 
 ---

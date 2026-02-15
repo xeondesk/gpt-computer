@@ -94,7 +94,7 @@ def test_installed_main_execution(tmp_path, monkeypatch):
     p.mkdir(parents=True)
     (p / "prompt").write_text("make a program that prints the outcome of 4+4")
     proc = subprocess.Popen(
-        ["gpte", str(p)],
+        ["gptc", str(p)],
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
         text=True,

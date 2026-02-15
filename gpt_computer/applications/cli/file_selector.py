@@ -89,7 +89,7 @@ class FileSelector:
             A dictionary with file paths as keys and file contents as values.
         """
 
-        if os.getenv("GPTE_TEST_MODE") or skip_file_selection:
+        if os.getenv("GPTC_TEST_MODE") or skip_file_selection:
             # In test mode, retrieve files from a predefined TOML configuration
             # also get from toml if skip_file_selector is active
             assert self.FILE_LIST_NAME in self.metadata_db

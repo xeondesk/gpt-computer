@@ -40,20 +40,20 @@ def test_human_review_input_consent_code_ran_not_perfect_but_useful_no_comments(
 
 
 def test_check_collection_consent_yes():
-    gpte_consent_mock = mock.Mock()
-    gpte_consent_mock.exists.return_value = True
-    gpte_consent_mock.read_text.return_value = "true"
+    gptc_consent_mock = mock.Mock()
+    gptc_consent_mock.exists.return_value = True
+    gptc_consent_mock.read_text.return_value = "true"
 
-    with mock.patch.object(learning, "Path", return_value=gpte_consent_mock):
+    with mock.patch.object(learning, "Path", return_value=gptc_consent_mock):
         result = learning.check_collection_consent()
 
     assert result is True
 
 
 def test_check_collection_consent_no_ask_collection_consent():
-    with mock.patch.object(learning, "Path") as gpte_consent_mock:
-        gpte_consent_mock.exists.return_value = True
-        gpte_consent_mock.read_text.return_value = "false"
+    with mock.patch.object(learning, "Path") as gptc_consent_mock:
+        gptc_consent_mock.exists.return_value = True
+        gptc_consent_mock.read_text.return_value = "false"
 
         with mock.patch.object(learning, "ask_collection_consent", return_value=True):
             result = learning.check_collection_consent()

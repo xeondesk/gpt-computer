@@ -141,10 +141,10 @@ class TestMain:
         # "main.py" = "selected"
         #             """
         # )
-        # os.environ["GPTE_TEST_MODE"] = "True"
+        # os.environ["GPTC_TEST_MODE"] = "True"
         # simplified_main(str(p), "improve")
         # DiskExecutionEnv(path=p)
-        # del os.environ["GPTE_TEST_MODE"]
+        # del os.environ["GPTC_TEST_MODE"]
 
     #  Runs gpt-computer with lite mode and generates a project with only the main prompt.
     def test_lite_mode_generate_project(self, tmp_path, monkeypatch):
@@ -311,7 +311,7 @@ class TestLoadPrompt:
 #         "main.py" = "selected"
 #                     """
 #         )
-#         os.environ["GPTE_TEST_MODE"] = "True"
+#         os.environ["GPTC_TEST_MODE"] = "True"
 #         simplified_main(str(p), "improve")
 #         DiskExecutionEnv(path=p)
 #         assert (
@@ -326,7 +326,7 @@ class TestLoadPrompt:
 # Make a python program that writes 'hello' to a file called 'output.txt'
 # CONSOLE OUTPUT:"""
 #         )
-#         del os.environ["GPTE_TEST_MODE"]
+#         del os.environ["GPTC_TEST_MODE"]
 #
 #     def test_log_creation_in_improve_mode_with_failing_diff(
 #         self, tmp_path, monkeypatch
@@ -379,7 +379,7 @@ class TestLoadPrompt:
 #         "main.py" = "selected"
 #                     """
 #         )
-#         os.environ["GPTE_TEST_MODE"] = "True"
+#         os.environ["GPTC_TEST_MODE"] = "True"
 #         simplified_main(str(p), "improve")
 #         DiskExecutionEnv(path=p)
 #         assert (
@@ -399,7 +399,7 @@ class TestLoadPrompt:
 # Invalid hunk: @@ -0,0 +1,9 @@
 # -create falling diff"""
 #         )
-#         del os.environ["GPTE_TEST_MODE"]
+#         del os.environ["GPTC_TEST_MODE"]
 #
 #     def test_log_creation_in_improve_mode_with_unexpected_exceptions(
 #         self, tmp_path, monkeypatch
@@ -432,7 +432,7 @@ class TestLoadPrompt:
 #         "main.py" = "selected"
 #                     """
 #         )
-#         os.environ["GPTE_TEST_MODE"] = "True"
+#         os.environ["GPTC_TEST_MODE"] = "True"
 #         simplified_main(str(p), "improve")
 #         DiskExecutionEnv(path=p)
 #         assert (
@@ -448,4 +448,4 @@ class TestLoadPrompt:
 # CONSOLE OUTPUT:
 # Error while improving the project: Mock exception in salvage_correct_hunks"""
 #         )
-#         del os.environ["GPTE_TEST_MODE"]
+#         del os.environ["GPTC_TEST_MODE"]
