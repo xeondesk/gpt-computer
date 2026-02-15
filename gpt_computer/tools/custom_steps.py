@@ -1,3 +1,5 @@
+import logging
+
 from platform import platform
 from sys import version_info
 from typing import List, Union
@@ -37,6 +39,9 @@ def get_platform_info() -> str:
     return a + b
 
 
+logger = logging.getLogger(__name__)
+
+
 def self_heal(
     ai: AI,
     execution_env: BaseExecutionEnv,
@@ -48,73 +53,48 @@ def self_heal(
 ) -> FilesDict:
     """
     Attempts to execute the code from the entrypoint and if it fails, sends the error output back to the AI with instructions to fix.
-
-    Parameters
-    ----------
-    ai : AI
-        An instance of the AI model.
-    execution_env : BaseExecutionEnv
-        The execution environment where the code is run.
-    files_dict : FilesDict
-        A dictionary of file names to their contents.
-    preprompts_holder : PrepromptsHolder, optional
-        A holder for preprompt messages.
-
-    Returns
-    -------
-    FilesDict
-        The updated files dictionary after self-healing attempts.
-
-    Raises
-    ------
-    FileNotFoundError
-        If the required entrypoint file does not exist in the code.
-    AssertionError
-        If the preprompts_holder is None.
-
-    Notes
-    -----
-    This code will make `MAX_SELF_HEAL_ATTEMPTS` to try and fix the code
-    before giving up.
-    This makes the assuption that the previous step was `gen_entrypoint`,
-    this code could work with `simple_gen`, or `gen_clarified_code` as well.
     """
 
-    # step 1. execute the entrypoint
-    # log_path = dbs.workspace.path / "log.txt"
     if ENTRYPOINT_FILE not in files_dict:
         raise FileNotFoundError(
-            "The required entrypoint "
-            + ENTRYPOINT_FILE
-            + " does not exist in the code."
+            f"The required entrypoint {ENTRYPOINT_FILE} does not exist in the code."
         )
 
     attempts = 0
     if preprompts_holder is None:
         raise AssertionError("Prepromptsholder required for self-heal")
+
     while attempts < MAX_SELF_HEAL_ATTEMPTS:
         attempts += 1
-        timed_out = False
+        logger.info(f"Self-healing attempt {attempts}/{MAX_SELF_HEAL_ATTEMPTS}")
 
         # Start the process
         execution_env.upload(files_dict)
         p = execution_env.popen(files_dict[ENTRYPOINT_FILE])
 
         # Wait for the process to complete and get output
-        stdout_full, stderr_full = p.communicate()
+        stdout_bytes, stderr_bytes = p.communicate()
+        stdout_full = stdout_bytes.decode("utf-8", errors="replace")
+        stderr_full = stderr_bytes.decode("utf-8", errors="replace")
 
-        if (p.returncode != 0 and p.returncode != 2) and not timed_out:
-            print("run.sh failed.  The log is:")
-            print(stdout_full.decode("utf-8"))
-            print(stderr_full.decode("utf-8"))
+        if p.returncode != 0:
+            logger.error(f"Execution failed with return code {p.returncode}")
+            logger.debug(f"STDOUT: {stdout_full}")
+            logger.debug(f"STDERR: {stderr_full}")
 
-            new_prompt = Prompt(
-                f"A program with this specification was requested:\n{prompt}\n, but running it produced the following output:\n{stdout_full}\n and the following errors:\n{stderr_full}. Please change it so that it fulfills the requirements."
+            error_msg = (
+                f"A program with this specification was requested:\n{prompt}\n\n"
+                f"But running it produced the following output:\n{stdout_full}\n\n"
+                f"And the following errors:\n{stderr_full}\n\n"
+                "Please analyze the errors and fix the code. Make sure to update ALL necessary files."
             )
+
+            new_prompt = Prompt(error_msg)
             files_dict = improve_fn(
                 ai, new_prompt, files_dict, memory, preprompts_holder, diff_timeout
             )
         else:
+            logger.info("Code executed successfully!")
             break
     return files_dict
 
@@ -224,8 +204,9 @@ def lite_gen(
     """
 
     preprompts = preprompts_holder.get_preprompts()
+    system_prompt = setup_sys_prompt(preprompts)
     messages = ai.start(
-        prompt.to_langchain_content(), preprompts["file_format"], step_name=curr_fn()
+        system_prompt, prompt.to_langchain_content(), step_name=curr_fn()
     )
     chat = messages[-1].content.strip()
     memory.log(CODE_GEN_LOG_FILE, "\n\n".join(x.pretty_repr() for x in messages))

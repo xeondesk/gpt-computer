@@ -44,7 +44,7 @@ curl --request POST \
      --data '{ "model": "CodeLlama", "prompt": "Who are you?", "max_tokens": 60}'
 ```
 
-If this works also make sure that `langchain` interface works since that's how `gpte` interacts with LLMs.
+If this works also make sure that `langchain` interface works since that's how `gptc` interacts with LLMs.
 
 ## Langchain test
 
@@ -53,4 +53,4 @@ export MODEL_NAME="CodeLlama"
 python examples/open_llms/langchain_interface.py
 ```
 
-That's it 🤓 time to go back [to](/docs/open_models.md#running-the-example) and give `gpte` a try.
+That's it 🤓 time to go back [to](/docs/open_models.md#running-the-example) and give `gptc` a try.

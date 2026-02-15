@@ -52,14 +52,10 @@ scratchpad
 # Pyenv
 .python-version
 
-.gpte_consent
+.gptc_consent
 
 # projects folder apart from default prompt
 
-projects/*
-!projects/example/prompt
-!projects/example-improve
-!projects/example-vision
 
 # docs
 
@@ -73,7 +69,7 @@ docs/tools
 
 # coding assistants
 .aider*
-.gpteng
+.gptcom
 
 # webapp specific
 webapp/node_modules

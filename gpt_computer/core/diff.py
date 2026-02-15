@@ -36,6 +36,8 @@ import logging
 from collections import Counter
 from typing import List
 
+logger = logging.getLogger(__name__)
+
 RETAIN = "retain"
 ADD = "add"
 REMOVE = "remove"
@@ -355,8 +357,10 @@ class Diff:
             is_valid = hunk.validate_and_correct(cut_lines_dict, problems)
             if not is_valid and len(problems) > 0:
                 for idx, val in enumerate(problems):
-                    print(f"\nInvalid Hunk NO.{idx}---\n{val}\n---")
-                self.hunks.remove(hunk)
+                    logger.warning(f"Invalid Hunk in {self.filename_pre}: {val}")
+                # We don't remove it here yet, let the caller decide or handle carefully
+                # self.hunks.remove(hunk) # Removing from list while iterating is bad
+
             # now correct the numbers, assuming the start line pre-edit has been fixed
             hunk.hunk_len_pre_edit = (
                 hunk.category_counts[RETAIN] + hunk.category_counts[REMOVE]

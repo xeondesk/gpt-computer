@@ -25,11 +25,11 @@ Information about the failure, including environment details, such as LLM used.
 
 ### Failure Logs
 
-If your project includes a debug_log_file.txt, kindly upload it from your_project/.gpteng/memory/ directory. This file encompasses all the necessary logs. Should the file prove extensive, consider utilizing GitHub's "add files" functionality.
+If your project includes a debug_log_file.txt, kindly upload it from your_project/.gptcom/memory/ directory. This file encompasses all the necessary logs. Should the file prove extensive, consider utilizing GitHub's "add files" functionality.
 
 ## System Information
 
-Please copy and paste the output of the `gpte --sysinfo` command as part of your bug report.
+Please copy and paste the output of the `gptc --sysinfo` command as part of your bug report.
 
 ## Installation Method
 

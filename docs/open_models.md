@@ -1,7 +1,7 @@
 Using with open/local models
 ============================
 
-**Use `gpte` first with OpenAI models to get a feel for the `gpte` tool.**
+**Use `gptc` first with OpenAI models to get a feel for the `gptc` tool.**
 
 **Then go play with experimental Open LLMs 🐉 support and try not to get 🔥!!**
 
@@ -65,7 +65,7 @@ Your best choice would be:
 
 We are still testing this part, but the larger the model you can run the better. Sure the responses might be slower in terms of (token/s), but code quality will be higher.
 
-For testing that the open LLM `gpte` setup works we recommend starting with a smaller model. You can download weights of [CodeLlama-13B-GGUF by the `TheBloke`](https://huggingface.co/TheBloke/CodeLlama-13B-GGUF) choose the largest model version you can run (for example `Q6_K`), since quantisation will degrade LLM performance.
+For testing that the open LLM `gptc` setup works we recommend starting with a smaller model. You can download weights of [CodeLlama-13B-GGUF by the `TheBloke`](https://huggingface.co/TheBloke/CodeLlama-13B-GGUF) choose the largest model version you can run (for example `Q6_K`), since quantisation will degrade LLM performance.
 
 Feel free to try out larger models on your hardware and see what happens.
 
@@ -76,7 +76,7 @@ To see that your setup works check [test open LLM setup](examples/test_open_llm/
 
 If above tests work proceed 😉
 
-For checking that `gpte` works with the `CodeLLama` we recommend for you to create a project with `prompt` file content:
+For checking that `gptc` works with the `CodeLLama` we recommend for you to create a project with `prompt` file content:
 
 ```
 Write a python script that sums up two numbers. Provide only the `sum_two_numbers` function and nothing else.
@@ -105,7 +105,7 @@ export LOCAL_MODEL=true
 And run `gpt-computer` with the following command:
 
 ```bash
-gpte <project_dir> $MODEL_NAME --lite --temperature 0.1
+gptc <project_dir> $MODEL_NAME --lite --temperature 0.1
 ```
 
 The `--lite` mode is needed for now since open models for some reason behave worse with too many instructions at the moment. Temperature is set to `0.1` to get consistent best possible results.
@@ -123,7 +123,7 @@ To set it up you need to Sign In and load purchase 💰 the LLM credits. Pricing
 
 Then create the API key.
 
-To for example use [Meta: Llama 3 8B Instruct (extended)](https://openrouter.ai/models/meta-llama/llama-3-8b-instruct:extended) with `gpte` we need to set:
+To for example use [Meta: Llama 3 8B Instruct (extended)](https://openrouter.ai/models/meta-llama/llama-3-8b-instruct:extended) with `gptc` we need to set:
 
 ```bash
 export OPENAI_API_BASE="https://openrouter.ai/api/v1"
@@ -133,7 +133,7 @@ export LOCAL_MODEL=true
 ```
 
 ```bash
-gpte <project_dir> $MODEL_NAME --lite --temperature 0.1
+gptc <project_dir> $MODEL_NAME --lite --temperature 0.1
 ```
 
 Using Azure models

@@ -1,3 +1,4 @@
+import logging
 import shutil
 import subprocess
 
@@ -5,6 +6,8 @@ from pathlib import Path
 from typing import List
 
 from gpt_computer.core.files_dict import FilesDict
+
+logger = logging.getLogger(__name__)
 
 
 def is_git_installed():
@@ -72,14 +75,13 @@ def stage_uncommitted_to_git(path, files_dict, improve_mode):
     # Check if there's a git repo and verify that there aren't any uncommitted changes
     if is_git_installed() and not improve_mode:
         if not is_git_repo(path):
-            print("\nInitializing an empty git repository")
+            logger.info("Initializing an empty git repository")
             init_git_repo(path)
 
     if is_git_repo(path):
         modified_files = filter_files_with_uncommitted_changes(path, files_dict)
         if modified_files:
-            print(
-                "Staging the following uncommitted files before overwriting: ",
-                ", ".join(modified_files),
+            logger.info(
+                f"Staging the following uncommitted files before overwriting: {', '.join(modified_files)}"
             )
             stage_files(path, modified_files)

@@ -1,3 +1,4 @@
+import logging
 import os
 
 from typing import Dict, Tuple
@@ -332,15 +333,16 @@ def test_single_diff():
     assert diffs["a/file1.txt"].diff_to_string() == correct_diff
 
 
-def test_multi_diff_discard():
-    captured_output = capture_print_output(lambda: parse_diffs(multi_diff))
-    diffs = parse_diffs(multi_diff)
+def test_multi_diff_discard(caplog):
+    with caplog.at_level(logging.WARNING, logger="gpt_computer.core.chat_to_files"):
+        diffs = parse_diffs(multi_diff)
     correct_diff = "\n".join(multi_diff.strip().split("\n")[1:8]).replace(
         "```\n```", ""
     )
-    assert (
+    assert any(
         "Multiple diffs found for a/file1.txt. Only the first one is kept."
-        in captured_output.getvalue()
+        in record.message
+        for record in caplog.records
     )
     assert diffs["a/file1.txt"].diff_to_string().strip() == correct_diff.strip()
 

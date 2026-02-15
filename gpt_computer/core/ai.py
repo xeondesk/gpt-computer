@@ -38,6 +38,23 @@ from langchain.schema import (
 from langchain_anthropic import ChatAnthropic
 from langchain_openai import AzureChatOpenAI, ChatOpenAI
 
+try:
+    from langchain_google_genai import ChatGoogleGenerativeAI
+except ImportError:
+    ChatGoogleGenerativeAI = None
+try:
+    from langchain_groq import ChatGroq
+except ImportError:
+    ChatGroq = None
+try:
+    from langchain_mistralai import ChatMistralAI
+except ImportError:
+    ChatMistralAI = None
+try:
+    from langchain_cohere import ChatCohere
+except ImportError:
+    ChatCohere = None
+
 from gpt_computer.core.token_usage import TokenUsageLog
 
 # Type hint for a chat message
@@ -90,6 +107,7 @@ class AI:
         model_name="gpt-4-turbo",
         temperature=0.1,
         azure_endpoint=None,
+        base_url=None,
         streaming=True,
         vision=False,
     ):
@@ -102,9 +120,12 @@ class AI:
             The name of the model to use, by default "gpt-4".
         temperature : float, optional
             The temperature to use for the model, by default 0.1.
+        base_url : str, optional
+            The base URL for the API (e.g., for local LLMs like Ollama), by default None.
         """
         self.temperature = temperature
         self.azure_endpoint = azure_endpoint
+        self.base_url = base_url
         self.model_name = model_name
         self.streaming = streaming
         self.vision = (
@@ -369,14 +390,59 @@ class AI:
                 streaming=self.streaming,
                 callbacks=[StreamingStdOutCallbackHandler()],
                 max_tokens=4096,  # vision models default to low max token limits
+                openai_api_base=self.base_url,
             )
-        else:
-            return ChatOpenAI(
+        elif "gemini" in self.model_name:
+            if ChatGoogleGenerativeAI is None:
+                raise ImportError("langchain-google-genai is not installed.")
+            return ChatGoogleGenerativeAI(
                 model=self.model_name,
                 temperature=self.temperature,
                 streaming=self.streaming,
+                convert_system_message_to_human=True,  # Gemini often needs this
                 callbacks=[StreamingStdOutCallbackHandler()],
             )
+        elif "llama" in self.model_name or "mixtral" in self.model_name:
+            # Assume Groq for Llama/Mixtral unless explicitly overridden or handled via base_url (which would be OpenAI class above if user passed base_url)
+            # If user passed base_url explictly, we might want to prioritize that via OpenAI class.
+            # But here we are inside _create_chat_model.
+            # If base_url is set, we might default to OpenAI client?
+            # Actually, let's make Groq explicit if no base_url, or if user asked for it.
+            # For simplicity, if model name matches Groq patterns and NO base_url is provided, use Groq.
+            if not self.base_url and ChatGroq:
+                return ChatGroq(
+                    model_name=self.model_name,
+                    temperature=self.temperature,
+                    streaming=self.streaming,
+                    callbacks=[StreamingStdOutCallbackHandler()],
+                )
+            # If base_url is provided, fall through to default OpenAI client which handles generic endpoints.
+        elif "mistral" in self.model_name and "mixtral" not in self.model_name:
+            # Mistral API (not Groq Mixtral)
+            if not self.base_url and ChatMistralAI:
+                return ChatMistralAI(
+                    model=self.model_name,
+                    temperature=self.temperature,
+                    streaming=self.streaming,
+                    callbacks=[StreamingStdOutCallbackHandler()],
+                )
+        elif "command" in self.model_name:
+            if not self.base_url and ChatCohere:
+                return ChatCohere(
+                    model=self.model_name,
+                    temperature=self.temperature,
+                    streaming=self.streaming,
+                    callbacks=[StreamingStdOutCallbackHandler()],
+                )
+
+        # Default to OpenAI (or compatible)
+        return ChatOpenAI(
+            model=self.model_name,
+            temperature=self.temperature,
+            streaming=self.streaming,
+            callbacks=[StreamingStdOutCallbackHandler()],
+            openai_api_base=self.base_url,
+        )
 
 
 def serialize_messages(messages: List[Message]) -> str:

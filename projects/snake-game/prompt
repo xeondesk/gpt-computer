@@ -1,0 +1,1 @@
+Create a terminal-based Snake game using the curses library in Python. The game should have a score counter and increase in speed as the snake grows.

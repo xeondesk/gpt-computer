@@ -349,7 +349,15 @@ def salvage_correct_hunks(
 
     for _, diff in diffs.items():
         # if diff is a new file, validation and correction is unnecessary
-        if not diff.is_new_file():
+        if diff.is_new_file():
+            # No validation needed for new files at this stage
+            pass
+        elif diff.filename_pre not in files_dict:
+            # If the file is not in files_dict and not a new file, it's an error
+            error_messages.append(
+                f"Diff for '{diff.filename_pre}' attempts to modify a non-existent file."
+            )
+        else:
             problems = diff.validate_and_correct(
                 file_to_lines_dict(files_dict[diff.filename_pre])
             )

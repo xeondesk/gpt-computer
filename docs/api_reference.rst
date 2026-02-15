@@ -59,15 +59,15 @@ Functions
 
     benchmark.__main__.get_agent
     benchmark.__main__.main
-    benchmark.benchmarks.gpteng.eval_tools.assert_exists_in_source_code
-    benchmark.benchmarks.gpteng.eval_tools.check_evaluation_component
-    benchmark.benchmarks.gpteng.eval_tools.check_language
-    benchmark.benchmarks.gpteng.eval_tools.run_code_class_has_property
-    benchmark.benchmarks.gpteng.eval_tools.run_code_class_has_property_w_value
-    benchmark.benchmarks.gpteng.eval_tools.run_code_eval_function
-    benchmark.benchmarks.gpteng.load.eval_to_task
-    benchmark.benchmarks.gpteng.load.expect_to_assertion
-    benchmark.benchmarks.gpteng.load.load_gpteng
+    benchmark.benchmarks.gptcom.eval_tools.assert_exists_in_source_code
+    benchmark.benchmarks.gptcom.eval_tools.check_evaluation_component
+    benchmark.benchmarks.gptcom.eval_tools.check_language
+    benchmark.benchmarks.gptcom.eval_tools.run_code_class_has_property
+    benchmark.benchmarks.gptcom.eval_tools.run_code_class_has_property_w_value
+    benchmark.benchmarks.gptcom.eval_tools.run_code_eval_function
+    benchmark.benchmarks.gptcom.load.eval_to_task
+    benchmark.benchmarks.gptcom.load.expect_to_assertion
+    benchmark.benchmarks.gptcom.load.load_gptcom
     benchmark.benchmarks.gptme.load.load_gptme
     benchmark.benchmarks.load.get_benchmark
     benchmark.run.print_results

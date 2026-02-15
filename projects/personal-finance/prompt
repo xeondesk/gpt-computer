@@ -1,0 +1,1 @@
+Design a personal finance tracker that saves data to a JSON file. It should allow users to add expenses with categories (e.g., Food, Rent, Fun) and generate a weekly summary report.

@@ -191,7 +191,7 @@ def check_collection_consent() -> bool:
     bool
         True if the user has given consent, False otherwise.
     """
-    path = Path(".gpte_consent")
+    path = Path(".gptc_consent")
     if path.exists() and path.read_text() == "true":
         return True
     else:
@@ -216,12 +216,12 @@ def ask_collection_consent() -> bool:
         answer = input("Invalid input. Please enter y or n: ")
 
     if answer.lower() == "y":
-        path = Path(".gpte_consent")
+        path = Path(".gptc_consent")
         path.write_text("true")
         print(colored("Thank you️", "light_green"))
         print()
         print(
-            "(If you no longer wish to participate in data collection, delete the file .gpte_consent)"
+            "(If you no longer wish to participate in data collection, delete the file .gptc_consent)"
         )
         return True
     else:
